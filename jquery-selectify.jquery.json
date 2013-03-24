@@ -6,7 +6,8 @@
 	"keywords": [ "selectify", "select"  ],
 	"author": {
 		"name": "Vincent Keizer",
-		"email": "vincent@vicreative.nl"
+		"email": "vincent@vicreative.nl",
+		"url" : "http://www.vicreative.nl/"
 	},
 	"licenses" : [ {
 			"type": "MIT",
