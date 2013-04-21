@@ -37,12 +37,22 @@
 
 .selectify .header .icon
 {
-    background-position: -64px -16px;
-    background-image: url("images/ui-icons_454545_256x240.png");
-    height:16px;
-    width:16px;
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: #999 transparent transparent;
+    border-image: none;
+    border-right: 7px solid transparent;
+    border-style: solid;
+    border-width: 7px;
+    content: " ";
+    height: 0;
+    margin-left: -7px;
+    position: absolute;
+    width: 0;
     right: 0.5em;
-    margin-top: -8px;
+    margin-top: -5px;
     position: absolute;
     top: 50%;
 }
@@ -57,6 +67,11 @@
 .selectify .header.hover .selected
 {
     color:#555;
+}
+
+.selectify .header.hover .icon
+{
+    border-color: #000 transparent transparent;
 }
 
 .selectify .option
