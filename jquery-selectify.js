@@ -159,6 +159,8 @@
                 $selected.addClass("active");
                 $(this).find(".option.hover").removeClass("hover");
                 $(this).trigger("scrollTo", $selected);
+                // Call change event on select to trigger other bound events.
+                event.data.select.change();
             }
         },
         // Event fired when change event on original element is triggered.
