@@ -10,9 +10,12 @@
     z-index:2;
     max-height:250px;
     overflow-y:auto;
+    list-style:none;
+    margin:0;
+    padding:0;
 }
 
-.selectify .header
+.selectify header
 {
     background: rgb(165,165,165); /* Old browsers */
     background: -moz-linear-gradient(top, rgba(165,165,165,1) 1%, rgba(99,99,99,1) 100%); /* FF3.6+ */
@@ -35,7 +38,7 @@
     cursor:pointer;
 }
 
-.selectify .header .icon
+.selectify header .icon
 {
     -moz-border-bottom-colors: none;
     -moz-border-left-colors: none;
@@ -57,19 +60,19 @@
     top: 50%;
 }
 
-.selectify .header .selected
+.selectify header .selected
 {
     color:#999;
     font-size: 14px;
     padding: 5px 15px;
 }
 
-.selectify .header.hover .selected
+.selectify header.state-hover .selected
 {
     color:#555;
 }
 
-.selectify .header.hover .icon
+.selectify header.state-hover .icon
 {
     border-color: #000 transparent transparent;
 }
@@ -84,12 +87,12 @@
     background:#FFF;
 }
 
-.selectify .option.hover
+.selectify .option.state-hover
 {
     background:#FECA40;
 }
 
-.selectify .option.active
+.selectify .option.state-active
 {
     background:#F39814;
     color:#FFF;

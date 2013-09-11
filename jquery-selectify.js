@@ -24,14 +24,14 @@
     var events = {
         // Event fired when select element is activated.
         activate: function (event) {
-            $(this).addClass("focus")
+            $(this).addClass("state-focus")
                    .unbind("keydown")
                    .keydown(function (e) {
                        switch (e.which) {
                            case 40:
-                               var hover = $(this).find(".option.hover");
+                               var hover = $(this).find(".option.state-hover");
                                if (!hover.length) {
-                                   hover = $(this).find(".option.active");
+                                   hover = $(this).find(".option.state-active");
                                }
                                var next = hover.next();
                                if (!next.length) {
@@ -41,9 +41,9 @@
                                e.preventDefault();
                                return false;
                            case 38:
-                               var hover = $(this).find(".option.hover");
+                               var hover = $(this).find(".option.state-hover");
                                if (!hover.length) {
-                                   hover = $(this).find(".option.active");
+                                   hover = $(this).find(".option.state-active");
                                }
                                var prev = hover.prev();
                                if (!prev.length) {
@@ -83,12 +83,13 @@
         // Event fired when select receives focus.
         focus: function (event) {
             target = event.originalEvent ? event.originalEvent.explicitOriginalTarget || event.originalEvent.srcElement : null;
-            if ($(this).hasClass("focus") && $(this).hasClass("open")) {
+            if ($(this).hasClass("state-focus") && $(this).hasClass("state-open")) {
                 return;
             }
-            else if (!$(this).hasClass("open") && (target == null || !event.data.select.has($(target)))) {
+            else if (!$(this).hasClass("state-open") && (target == null || event.data.select.has($(target)) || event.data.select.is($(target)))) {
                 $(this).trigger("open");
             }
+
             $(this).trigger("activate");
         },
         // Event fired when select loses focus.
@@ -97,8 +98,8 @@
             if (event.data && event.data.select) {
                 select = event.data.select;
             }
-            if (select.hasClass("open")) {
-                select.removeClass("focus")
+            if (select.hasClass("state-open")) {
+                select.removeClass("state-focus")
                    .trigger("close")
                    .unbind("keydown");
                 $(document).unbind("click", events.blur);
@@ -106,23 +107,22 @@
         },
         // Event fired when select is opened.
         open: function (event) {
-            if (!$(this).hasClass("open"));
-            {
+            if (!$(this).hasClass("state-open")) {
                 // IE 10 gives us problems when scrollbar is clicked, it sends an focusout event.
                 $(document).click({ select: $(this) }, events.blur);
                 event.preventDefault();
                 $(this).find(".options").slideDown("fast", function () {
-                    $(this).parents(".selectify").addClass("open");
-                    $(this).trigger("scrollTo", $(this).children(".option.active"));
+                    $(this).parents(".selectify").addClass("state-open");
+                    $(this).trigger("scrollTo", $(this).find(".option.state-active"));
                 });
                 return false;
             }
         },
         // Event fired when select is closed.
         close: function () {
-            if ($(this).hasClass("open"));
+            if ($(this).hasClass("state-open"));
             {
-                $(this).removeClass("open")
+                $(this).removeClass("state-open")
                        .find(".options").slideUp();
             }
         },
@@ -146,7 +146,7 @@
                 return;
             }
             if (typeof selected == "string") {
-                $(this).find(".option[data-id='" + selected + "']:not(.active)").click();
+                $(this).find(".option[data-id='" + selected + "']:not(.state-active)").click();
                 return;
             }
             if (typeof selected == "object") {
@@ -154,10 +154,11 @@
                 var id = $selected.attr("data-id");
                 event.data.select.val(id);
                 $(this).find(".selected").attr("data-id", id)
-                                         .text($selected.text());
-                $(this).find(".option.active").removeClass("active");
-                $selected.addClass("active");
-                $(this).find(".option.hover").removeClass("hover");
+                                         .attr("class", "selected" + ($selected.attr("data-class").length ? " " + $selected.attr("data-class") : ""))
+                                         .find("span").text($selected.text());
+                $(this).find(".option.state-active").removeClass("state-active");
+                $selected.addClass("state-active");
+                $(this).find(".option.state-hover").removeClass("state-hover");
                 $(this).trigger("scrollTo", $selected);
                 // Call change event on select to trigger other bound events.
                 event.data.select.change();
@@ -182,7 +183,7 @@
                 // If the plugin hasn't been initialized yet
                 if (!data) {
                     var select = $('<div />', {
-                        "class": 'selectify',
+                        "class": 'selectify' + (this.className.length ? " " + this.className : ""),
                         "tabindex": "0"
                     }).bind("focus", { select: $this }, events.focus)
                       .bind("removefocus", events.blur)
@@ -192,23 +193,25 @@
                       .bind("activate", { select: $this }, events.activate)
                       .bind("select", { select: $this }, events.select);
 
-                    var options = $("<div />", {
+                    var options = $("<ul />", {
                         "class": 'options'
                     });
                     var selected = $("<div />", {
-                        "class": 'selected',
-                        "data-id": $this.children(":selected").val(),
+                        "class": 'selected' + ($this.children(":selected").attr("class") && $this.children(":selected").attr("class").length ? " " + $this.children(":selected").attr("class") : ""),
+                        "data-id": $this.children(":selected").val()
+                    }).append($("<div />", {
+                        "class": "icon"
+                    })).append($("<span />", {
                         text: $this.children(":selected").text()
-                    });
+                    }));
 
-                    var header = $("<div />", {
-                        "class": "header",
+                    var header = $("<header />", {
                         click: function () {
-                            if ($(this).parent().hasClass("open")
-                             && $(this).parent().hasClass("focus")) {
+                            if ($(this).parent().hasClass("state-open")
+                             && $(this).parent().hasClass("state-focus")) {
                                 $(this).trigger("close");
                             }
-                            else if (!$(this).parent().hasClass("focus")) {
+                            else if (!$(this).parent().hasClass("state-focus")) {
                                 $(this).trigger("activate");
                             }
                             else {
@@ -216,10 +219,10 @@
                             }
                         },
                         mouseover: function () {
-                            $(this).addClass("hover");
+                            $(this).addClass("state-hover");
                         },
                         mouseout: function () {
-                            $(this).removeClass("hover");
+                            $(this).removeClass("state-hover");
                         }
                     });
 
@@ -228,28 +231,35 @@
                     });
 
                     $this.children().each(function () {
-                        var option = $('<div />', {
-                            "class": "option",
+                        var option = $('<li />', {
+                            "class": "option" + (this.className.length ? " " + this.className : ""),
                             "data-id": $(this).val(),
                             "data-text": $(this).text().toLowerCase(),
-                            text: $(this).text(),
+                            "data-class": this.className,
                             click: function () {
                                 $(this).trigger("select", this)
                                        .trigger("close");
                             },
                             mouseover: function () {
-                                $(this).siblings().removeClass("hover");
-                                $(this).addClass("hover");
+                                $(this).siblings().removeClass("state-hover");
+                                $(this).addClass("state-hover");
                             },
                             mouseout: function () {
-                                $(this).removeClass("hover");
+                                $(this).removeClass("state-hover");
                             }
-                        });
+                        }).append($("<div />", {
+                            "class": "icon"
+                        }))
+                        .append($("<span />", {
+                            text: $(this).text()
+                        }));
                         options.append(option);
                     });
+
                     select.append(header.append(selected)
-                                        .append(icon))
-                          .append(options);
+                                       .append(icon))
+                              .append(options)
+                              .append($("<footer />"));
                     $this.before(select);
 
                     var width = options.outerWidth() + icon.outerWidth();
